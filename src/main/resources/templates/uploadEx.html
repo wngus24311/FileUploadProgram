@@ -5,8 +5,12 @@
     <title>Title</title>
 </head>
 <body>
-    <input name="uploadFiles" type="file" multiple>
+    <input name="uploadFiles" type="file" multiple="multiple">
     <button class="uploadBtn">Upload</button>
+
+    <div class="uploadResult">
+
+    </div>
 
     <script src="https://code.jquery.com/jquery-3.6.3.min.js"
             integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
@@ -21,6 +25,7 @@
            for (let i = 0; i < files.length; i++) {
                console.log(files[i]);
                formData.append("uploadFiles", files[i]);
+               console.log("됨");
            }
             $.ajax({
                 url: '/uploadAjax',
@@ -31,13 +36,45 @@
                 dataType: 'json',
                 success: function (result) {
                     console.log("result ==========> " + result);
-                    alert("파일 업로드를 완료했습니다.");
+                    showUploadImages(result);
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     console.log("error ========> " + textStatus);
+                    console.log("jqXHR ========> " + jqXHR);
+                    console.log("errorThrown ========> " + errorThrown);
                 }
             });
         });
+
+        function showUploadImages(arr) {
+            console.log("arr ============> " + arr);
+            let divArea = $(".uploadResult");
+            let str = "";
+            for (let i = 0; i < arr.length; i++) {
+                str += "<dvi>";
+                str += "<img src='/display?fileName=" + arr[i].thumbnailURL + "'>";
+                str += "<button class='removeBtn' data-name='" + arr[i].thumbnailURL + "'> 삭제 </button>";
+                str += "<button class='removeBtn' data-name='" + arr[i].imageURL + "'> 삭제 </button>";
+                str += "</div>";
+
+                divArea.append(str);
+            }
+        }
+
+        $(".uploadResult").on("click", ".removeBtn", function (e) {
+            let target = $(this);
+            let fileName = target.data("name");
+            let targetDiv = $(this).closest();
+
+            console.log(fileName);
+
+            $.post('/removeFile', {fileName:fileName}, function (result) {
+                console.log("result =======> " + result);
+                if (result === true) {
+                    targetDiv.remove();
+                }
+            })
+        })
     </script>
 </body>
 </html>
