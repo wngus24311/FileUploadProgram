@@ -5,9 +5,39 @@
     <title>Title</title>
 </head>
 <body>
-    <input name="uploadFiles" type="file" multipart>
+    <input name="uploadFiles" type="file" multiple>
     <button class="uploadBtn">Upload</button>
 
-    <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js"
+            integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
+            crossorigin="anonymous">
+    </script>
+    <script>
+        $('.uploadBtn').click(function () {
+           let formData = new FormData();
+           let inputFile = $("input[type='file']");
+           let files = inputFile[0].files;
+
+           for (let i = 0; i < files.length; i++) {
+               console.log(files[i]);
+               formData.append("uploadFiles", files[i]);
+           }
+            $.ajax({
+                url: '/uploadAjax',
+                processData: false,
+                contentType: false,
+                data: formData,
+                type: "POST",
+                dataType: 'json',
+                success: function (result) {
+                    console.log("result ==========> " + result);
+                    alert("파일 업로드를 완료했습니다.");
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log("error ========> " + textStatus);
+                }
+            });
+        });
+    </script>
 </body>
 </html>
